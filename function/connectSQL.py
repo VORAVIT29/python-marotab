@@ -16,10 +16,10 @@ class SQL:
                 f"Server={server_name};"
                 f"Database={database_name};"
                 "Trusted_Connection=yes;")
-            
+
             # connect to cuesor
             self.cursor = self.connect.cursor()
-            
+
         except db.Error as ex:
             print('Error connecting to : ', ex)
 
@@ -31,9 +31,6 @@ class SQL:
             # Check result
             for row in self.cursor:
                 print(row)
-
-            # ปิดการเชิ่มต่อ
-            self.connect.close()
 
         except db.Error as ex:
             print('Error Select table : ', ex)

@@ -39,7 +39,7 @@ class ruk:
 
     # ---- function select crop img ----
     def select_crop_img(self):
-        img_row = cv2.imread(self.path_img)
+        img_row = cv2.imread(self.patch_crop)
         img_pos = cv2.selectROI(img_row)
         print('image pos : ', img_pos)
 
