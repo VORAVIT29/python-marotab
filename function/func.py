@@ -4,11 +4,9 @@ from pytesseract import pytesseract
 
 
 class ruk:
-    path_img = None
     patch_crop = None
 
-    def __init__(self, patch):
-        self.path_img = patch
+    def __init__(self):
         self.patch_crop = 'croptest.png'
 
     # ---- function open Camera ----
@@ -31,7 +29,7 @@ class ruk:
     def show_img_to_str(self):
         img_row = cv2.imread(self.patch_crop)
         img_row = cv2.cvtColor(img_row, cv2.COLOR_BGR2GRAY)
-        # cv2.imshow('Result', img_row)
+        cv2.imshow('Result', img_row)
         img_to_str = pytesseract.image_to_string(img_row)
         print(f'Text => {img_to_str}')
         return img_to_str

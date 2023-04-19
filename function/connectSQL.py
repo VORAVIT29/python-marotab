@@ -30,7 +30,7 @@ class SQL:
 
             # Check result
             for row in self.cursor:
-                print(row)
+                print(f'Result [{row[0]}] {row[1]} {row[2]}')
 
         except db.Error as ex:
             print('Error Select table : ', ex)
