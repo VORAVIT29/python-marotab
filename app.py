@@ -14,39 +14,53 @@ CORS(app)
 sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
 
 
-@app.route('/api/get-data', methods=['POST'])
-def select_data():
-    data_id = request.json
-    # print('Id =>', data_id['idHost'])
+# data = request.get_json()
+# print(data['message'])
 
-    # data = request.get_json()
-    # print(data['message'])
-
-    # Query Table
-    dataQuery = sql.select_query('host')
-    # print(dataQuery)
-
-    return jsonify(dataQuery)
-
-
-@app.route('/api/insert-login', methods=['POST'])
+@app.route('/insert-login', methods=['POST'])
 def insert_login():
     data = request.json
     dataTarget = data['target']
     tableName = data['table']
-
     # print(dataTarget)
     result = sql.insert_data(tableName, dataTarget)
+    print(f'Insert Login => {result}')
     return jsonify(result)
 
 
-@app.route('/api/check-login', methods=['POST'])
+@app.route('/check-login', methods=['POST'])
 def check_login():
     data = request.json
     user = data['username']
     password = data['password']
-    print(user, password)
-    
+    result = sql.chek_login(user, password)
+    print(f'Check Login => {result}')
+    return jsonify(result)
+
+
+@app.route('/change-forget-password', methods=['POST'])
+def change_forget_pass():
+    data = request.json
+    id_admin = data['id_admin']
+    new_password = data['password']
+    result = sql.chenge_password(new_password, id_admin)
+    print(f'Change Password => {result}')
+    return jsonify(result)
+
+
+@app.route('/findUserPass-byAdminPass', methods=['POST'])
+def find_by_adminPass():
+    data = request.json
+    admin_pass = data['admin_password']
+    dataQuery = sql.findUserPassByAdminPass(admin_pass)
+    print(f'findUser byadminpass => {dataQuery}')
+    return jsonify(dataQuery)
+
+
+@app.route('/select-unit-byId', methods=['POST'])
+def select_unit_byId():
+    data = request.json
+    id = data['id']
     return ''
 
 
