@@ -1,40 +1,78 @@
-import json
-
-from pytesseract import pytesseract
-import pyodbc as odcbcon
-import random
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from function import func, connectSQL
+import platform
+import importlib_metadata
 
-# main
-# pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
-# SQL Local
+app = Flask(__name__)
+CORS(app)
+
+# Connect Sql
+# Local Server
 # sql = connectSQL.SQL('DESKTOP-R4AEEG6\SQLEXPRESS', 'testDatabase')
-# SQL Server
+# Server Cloud
 sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
-num = '2'
-tempTarget = '{"username":"user' + num + '","password":"pass' + num + '","admin_password":"adminPass' + num + '","name_host":"name' + num + '","last_name":"last' + num + '","email":"email' + num + '@email.com","phone_number":"09123456789"}'
-print(tempTarget)
-json_temp = json.loads(tempTarget)
-for field in json_temp:
-    print(json_temp[field])
-# while True:
-#     tar = func.ruk()
-#     tar.openCaramra()
-#     tar.select_crop_img()
-#     # img to text
-#     text_mitor = tar.show_img_to_str()
 
-#     # test insert data
-#     if len(text_mitor) > 0:
-#         # connect sql
-#         sql = connectSQL.SQL('DESKTOP-R4AEEG6\SQLEXPRESS', 'testDatabase')
-#         # query table
-#         sql.select_query('info_mitor')
-#         # insert data
-#         random_age = random.randint(0, 100)
-#         list_values = (text_mitor.replace('\n', ''), random_age)
-#         sql.insert_data('info_mitor', list_values)
-#         break
 
-#     else:
-#         print('รูปไม่ชัดการุณากลับไปถ่ายรูปใหม่.....')
+# data = request.get_json()
+# print(data['message'])
+
+@app.route('/')
+def main():
+    return '<center>' \
+           '<h1>Welcome To Python Server</h1>' \
+           f'<h2>Python Version ({platform.python_version()})</h2>' \
+           f'<h3>Flask Version ({importlib_metadata.version("flask")})</h3>' \
+           '</center>'
+
+
+@app.route('/insert-login', methods=['POST'])
+def insert_login():
+    data = request.json
+    dataTarget = data['target']
+    tableName = data['table']
+    # print(dataTarget)
+    result = sql.insert_data(tableName, dataTarget)
+    print(f'Insert Login => {result}')
+    return jsonify(result)
+
+
+@app.route('/check-login', methods=['POST'])
+def check_login():
+    data = request.json
+    user = data['username']
+    password = data['password']
+    result = sql.chek_login(user, password)
+    print(f'Check Login => {result}')
+    return jsonify(result)
+
+
+@app.route('/change-forget-password', methods=['POST'])
+def change_forget_pass():
+    data = request.json
+    id_admin = data['id_admin']
+    new_password = data['password']
+    result = sql.chenge_password(new_password, id_admin)
+    print(f'Change Password => {result}')
+    return jsonify(result)
+
+
+@app.route('/findUserPass-byAdminPass', methods=['POST'])
+def find_by_adminPass():
+    data = request.json
+    admin_pass = data['admin_password']
+    dataQuery = sql.findUserPassByAdminPass(admin_pass)
+    print(f'findUser byadminpass => {dataQuery}')
+    return jsonify(dataQuery)
+
+
+@app.route('/select-unit-byId', methods=['POST'])
+def select_unit_byId():
+    data = request.json
+    id = data['id']
+    return ''
+
+
+if __name__ == '__main__':
+    # app.run(debug=True, host='localhost', port=3000)
+    app.run(debug=True)
