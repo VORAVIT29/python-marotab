@@ -17,10 +17,12 @@ class SQL:
         self.connect_database()
 
     def connect_database(self):
+        result = {'status': '', 'result': None}
         try:
+            # ODBC Driver 17 for SQL Server
             # self.connect = db.connect(
-            #     "Driver={SQL Server};"
-            #     f"Server={server_name};Database={database_name};Trusted_Connection=yes;"
+            #     "Driver={ODBC Driver 17 for SQL Server};"
+            #     f"Server={self.serverName};Database={self.databaseName};Trusted_Connection=yes;"
             # )
 
             self.connect = db.connect(
@@ -32,9 +34,13 @@ class SQL:
             self.cursor = self.connect.cursor()
 
             print("Connect Suscess")
+            result['result'] = "Connect Suscess"
+            return result
 
         except db.Error as ex:
             print('Error connecting to : ', ex)
+            result['result'] = 'Error connecting to : ', ex
+            return result
 
     def findUserPassByAdminPass(self, admin_pass):
         result = {'status': '', 'result': None}
@@ -124,6 +130,11 @@ class SQL:
             print('Error => ', ex)
             result['message'] = f'Error => {ex}'
             return result
+
+    def find_all(self, table_name):
+        query_all = f"SELECT * FROM {table_name}"
+        self.cursor.execute(query_all)
+        return self.cursor.fetchall()
 
     def convertMD5(self, password):
         return hashlib.md5(password.encode()).hexdigest()

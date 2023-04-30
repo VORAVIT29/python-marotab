@@ -1,8 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from function import func, connectSQL
-import platform
-import importlib_metadata
+from function import connectSQL
 
 app = Flask(__name__)
 CORS(app)
@@ -19,11 +17,13 @@ sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
 
 @app.route('/')
 def main():
+    result = sql.connect_database()
     return '<center>' \
            '<h1>Welcome To Python Server</h1>' \
-           f'<h2>Python Version ({platform.python_version()})</h2>' \
-           f'<h3>Flask Version ({importlib_metadata.version("flask")})</h3>' \
-           '</center>'
+           '<h2>Python Version (3.9)</h2>' \
+           '<h3>Flask Version (2.2.2)</h3>' \
+           f'<p>Status Database: {result["result"]}</p>' \
+           f'</center>'
 
 
 @app.route('/insert-login', methods=['POST'])
@@ -31,10 +31,17 @@ def insert_login():
     data = request.json
     dataTarget = data['target']
     tableName = data['table']
+    print(dataTarget)
     # print(dataTarget)
     result = sql.insert_data(tableName, dataTarget)
     print(f'Insert Login => {result}')
     return jsonify(result)
+
+
+@app.route('/all-data/<table>')
+def find_all(table):
+    data_all = sql.find_all(table)
+    return f"<p>{data_all}</p>"
 
 
 @app.route('/check-login', methods=['POST'])
@@ -66,11 +73,11 @@ def find_by_adminPass():
     return jsonify(dataQuery)
 
 
-@app.route('/select-unit-byId', methods=['POST'])
-def select_unit_byId():
-    data = request.json
-    id = data['id']
-    return ''
+# @app.route('/select-unit-byId', methods=['POST'])
+# def select_unit_byId():
+#     data = request.json
+#     id = data['id']
+#     return ''
 
 
 if __name__ == '__main__':
