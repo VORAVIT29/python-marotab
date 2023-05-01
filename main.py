@@ -18,6 +18,7 @@ sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
 @app.route('/')
 def main():
     result = sql.connect_database()
+    print("/")
     return '<center>' \
            '<h1>Welcome To Python Server</h1>' \
            '<h2>Python Version (3.9)</h2>' \
@@ -40,6 +41,7 @@ def insert_login():
 
 @app.route('/all-data/<table>')
 def find_all(table):
+    print(f"/all-data/{table}")
     data_all = sql.find_all(table)
     return f"<p>{data_all}</p>"
 
