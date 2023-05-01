@@ -19,14 +19,13 @@ class SQL:
     def connect_database(self):
         result = {'status': '', 'result': None}
         try:
-            # ODBC Driver 17 for SQL Server
             # self.connect = db.connect(
             #     "Driver={ODBC Driver 17 for SQL Server};"
             #     f"Server={self.serverName};Database={self.databaseName};Trusted_Connection=yes;"
             # )
 
             self.connect = db.connect(
-                'Driver={SQL Server};'
+                'Driver={ODBC Driver 17 for SQL Server};'
                 f'Server={self.serverName};Database={self.databaseName};UID=sqlserver;PWD=~|YQ4p->-vv*dk\P'
             )
 
