@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from function import connectSQL
+from function import connectSQL, tesseract
 
 app = Flask(__name__)
 CORS(app)
@@ -91,11 +91,10 @@ def find_by_adminPass():
     return jsonify(dataQuery)
 
 
-# @app.route('/select-unit-byId', methods=['POST'])
-# def select_unit_byId():
-#     data = request.json
-#     id = data['id']
-#     return ''
+@app.route('/img-to-text', methods=['POST'])
+def img_to_text():
+    data = request.json
+    return ''
 
 
 if __name__ == '__main__':
