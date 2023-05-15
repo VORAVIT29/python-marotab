@@ -94,6 +94,7 @@ def find_by_adminPass():
 @app.route('/img-to-text', methods=['POST'])
 def img_to_text():
     data = request.json
+    print("/img-to-text")
     return ''
 
 
