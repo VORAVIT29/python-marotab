@@ -1,7 +1,7 @@
-import json
-import hashlib
-import pyodbc as db
 from function.dataStatic import *
+import pyodbc as db
+import hashlib
+import json
 
 
 class SQL:
@@ -99,7 +99,8 @@ class SQL:
 
             if table_name == "host":
                 # convert password MD5
-                json_datas['password'] = self.convertMD5(json_datas['password'])
+                json_datas['password'] = self.convertMD5(
+                    json_datas['password'])
             elif table_name == 'Tenant_registration':
                 # update status room tenant
                 self.update_status_room(json_datas['room_number'], True)
@@ -107,8 +108,10 @@ class SQL:
             # [json_datas[field] for field in json_datas if field != 'id_admin']
             value_list = [json_datas[field] for field in json_datas]
 
+            print(value_list)
             # convert List to String
-            value_list_toStr = ','.join([elem if type(elem) == int else f'\'{elem}\'' for elem in value_list])
+            value_list_toStr = ','.join(
+                [elem if type(elem) == int else f'\'{elem}\'' for elem in value_list])
 
             # Query insert
             insert_data = f"INSERT INTO {table_name} VALUES ({value_list_toStr}) "
@@ -124,7 +127,7 @@ class SQL:
             # self.connect.close()
 
             self.set_result(STATUS_SUCCESS)
-            print(self.result['status'])
+            # print(self.result['status'])
             return self.result
         except db.Error as ex:
             print('Error => ', ex)
@@ -190,6 +193,57 @@ class SQL:
         except db.Error as ex:
             self.set_result(STATUS_ERROR, f"Error => {ex}")
             return self.result
+
+    def save_img(self, table_name, dataTarget):
+        try:
+            # convert String to Json
+            json_datas = json.loads(dataTarget)
+
+            json_datas['id_tenant_registration'] = self.find_tenant_by_roomnumber(
+                json_datas['room_number']
+            )
+
+            Query_insert = f"INSERT INTO {table_name} (room_number,piture,unit_present,id_tenant_registration) " \
+                f"VALUES('{json_datas['room_number']}','{json_datas['piture']}', '{json_datas['unit_present']}'," \
+                f"'{json_datas['id_tenant_registration']}')"
+
+            # cursor query
+            self.cursor.execute(Query_insert)
+
+            # connect commit
+            self.connect.commit()
+
+            self.set_result(STATUS_SUCCESS)
+            return self.result
+        except db.Error as ex:
+            self.set_result(STATUS_ERROR, f"Error => {ex}")
+            return self.result
+
+    def find_dataImg_byRoomnumber(self, room_number):
+        try:
+            Query = f'SELECT * FROM camera_capture_unit WHERE room_number = {room_number}'
+
+            self.cursor.execute(Query)
+
+            data_list = self.cursor.fetchall()
+
+            data_json = []
+            if len(data_list) > 0:
+                # data list to json
+                data_json = self.data_list_to_json(data_list)[0]
+                self.set_result(STATUS_SUCCESS, data_json)
+            else:
+                self.set_result(STATUS_EMPTY)
+
+            return self.result
+        except db.Error as ex:
+            self.set_result(STATUS_ERROR, f"Error => {ex}")
+            return self.result
+
+    def find_tenant_by_roomnumber(self, id_roomnumber):
+        query = f"SELECT id FROM Tenant_registration WHERE room_number = '{id_roomnumber}' "
+        self.cursor.execute(query)
+        return self.cursor.fetchone()[0]
 
     def find_all(self, table_name):
         try:

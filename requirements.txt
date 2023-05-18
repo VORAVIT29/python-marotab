@@ -5,3 +5,4 @@ pyodbc==4.0.35
 gunicorn==20.1.0
 opencv-python==4.7.0.72
 easyocr==1.6.2
+Pillow==9.5.0

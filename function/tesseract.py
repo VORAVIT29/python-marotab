@@ -1,6 +1,11 @@
 # import pytesseract
-# import cv2
-# import os
+from function.dataStatic import *
+from io import BytesIO
+from PIL import Image
+import easyocr
+import base64
+import cv2
+import os
 
 # pytesseract.pytesseract.tesseract_cmd = f"{os.getcwd()}/function/Tesseract-OCR/tesseract.exe"
 
@@ -44,47 +49,58 @@
 # img1 = noise_img(img1)
 
 
-# # result_text = img_to_text(img1)
-# # print(result_text)
+# result_text = img_to_text(img1)
+# print(result_text)
 
 # cv2.imshow('mitor', img1)
 # cv2.imshow('original', img)
 # cv2.waitKey(0)
 
-import easyocr
-import cv2
-
-
-# from matplotlib import pyplot as plt
-
-
 class tesseract:
-    img = None
+    result = {'status': '', 'result': None}
+    img64 = None
 
     def __init__(self, img_patch):
-        img = img_patch
+        self.img64 = img_patch
 
     def set_data(self):
-        reander = easyocr.Reader(['en'])
-        result = reander.readtext("miter.jpg")
-        font = cv2.FONT_HERSHEY_SIMPLEX
+        img_split = str(self.img64).split(',')[1]
+        img_bytes = base64.b64decode(img_split)
+        img = Image.open(BytesIO(img_bytes))
 
-        spacer = 100
+        # Save img byte to img png
+        img.save('image_process.png', 'PNG')
+
+        reander = easyocr.Reader(['en'])
+        result = reander.readtext('image_process.png')
+        # font = cv2.FONT_HERSHEY_SIMPLEX
+
+        # spacer = 100
         text_list = []
         for detection in result:
-            top_left = tuple(detection[0][0])
-            bottom_right = tuple(detection[0][2])
+            # top_left = tuple(detection[0][0])
+            # bottom_right = tuple(detection[0][2])
             text = detection[1]
             text_list.append(text)
-            img = cv2.rectangle(img, top_left, bottom_right, (0, 255, 0), 3)
-            img = cv2.putText(img, text, (20, spacer), font,
-                              0.5, (255, 45, 0), 2, cv2.LINE_AA)
-            spacer += 15
+            # img = cv2.rectangle(img, top_left, bottom_right, (0, 255, 0), 3)
+            # img = cv2.putText(img, text, (20, spacer), font,
+            #                   0.5, (255, 45, 0), 2, cv2.LINE_AA)
+            # spacer += 15
 
-            # plt.imshow(img)
-            # plt.show()
+        # remove image
+        os.remove("image_process.png")
 
-            # plt.imshow(imgOrg)
-            # plt.show()
+        return set_result(STATUS_SUCCESS, ''.join(text_list))
 
-            # text_list
+    # def set_result(self, status='', result=None):
+    #     self.result['status'] = status
+    #     self.result['result'] = result
+    #     print(self.result)
+
+    # plt.imshow(img)
+    # plt.show()
+
+    # plt.imshow(imgOrg)
+    # plt.show()
+
+    # text_list

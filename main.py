@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from function import connectSQL, tesseract
+from function import connectSQL, tesseract as tr
 
 app = Flask(__name__)
 CORS(app)
@@ -18,7 +18,7 @@ sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
 @app.route('/')
 def main():
     return '<center>' \
-           '<h1>Welcome To Python Server V.1</h1>' \
+           '<h1>Welcome To Python Server V.1.2</h1>' \
            '<h2>Python Version (3.9)</h2>' \
            '<h3>Flask Version (2.2.2)</h3>' \
            f'<p>Status Database: <strong>{sql.result["result"]}</strong></p>' \
@@ -31,6 +31,15 @@ def insert_data():
     dataTarget = data['target']
     tableName = data['table']
     result = sql.insert_data(tableName, dataTarget)
+    return jsonify(result)
+
+
+@app.route('/save-img', methods=['POST'])
+def save_img():
+    data = request.json
+    dataTarget = data['target']
+    tableName = data['table']
+    result = sql.save_img(tableName, dataTarget)
     return jsonify(result)
 
 
@@ -59,6 +68,12 @@ def find_all(table):
 @app.route('/find-data-tenant-byIdNumber/<id>')
 def find_data_byIdNumber(id):
     result = sql.find_data_byId(id)
+    return jsonify(result)
+
+
+@app.route('/find-dataImg-byRoomnumber/<roomNumber>')
+def find_dataImg_byRoomnumber(roomNumber):
+    result = sql.find_dataImg_byRoomnumber(roomNumber)
     return jsonify(result)
 
 
@@ -94,8 +109,10 @@ def find_by_adminPass():
 @app.route('/img-to-text', methods=['POST'])
 def img_to_text():
     data = request.json
-    print("/img-to-text")
-    return ''
+    url_img = data['url_img']
+    ter = tr.tesseract(url_img)
+    result = ter.set_data()
+    return jsonify(result)
 
 
 if __name__ == '__main__':
