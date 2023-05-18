@@ -199,16 +199,23 @@ class SQL:
             # convert String to Json
             json_datas = json.loads(dataTarget)
 
+            # find id tenant registration
             json_datas['id_tenant_registration'] = self.find_tenant_by_roomnumber(
                 json_datas['room_number']
             )
-
-            Query_insert = f"INSERT INTO {table_name} (room_number,piture,unit_present,id_tenant_registration) " \
-                f"VALUES('{json_datas['room_number']}','{json_datas['piture']}', '{json_datas['unit_present']}'," \
-                f"'{json_datas['id_tenant_registration']}')"
+            if json_datas['id'] == 0:
+                # print('insert')
+                Query = f"INSERT INTO {table_name} (room_number,piture,unit_present,id_tenant_registration) " \
+                        f"VALUES('{json_datas['room_number']}','{json_datas['piture']}', '{json_datas['unit_present']}'," \
+                        f"'{json_datas['id_tenant_registration']}')"
+            else:
+                # print('update')
+                Query = f"UPDATE {table_name} SET room_number='{json_datas['room_number']}',piture='{json_datas['piture']}'," \
+                        f"unit_present='{json_datas['unit_present']}',id_tenant_registration='{json_datas['id_tenant_registration']}'" \
+                        f"WHERE id = {json_datas['id']}"
 
             # cursor query
-            self.cursor.execute(Query_insert)
+            self.cursor.execute(Query)
 
             # connect commit
             self.connect.commit()
@@ -262,7 +269,7 @@ class SQL:
     def set_result(self, status='', result=None):
         self.result['status'] = status
         self.result['result'] = result
-        print(self.result)
+        # print(self.result)
 
     def data_list_to_json(self, data_lists):
         # Convert List to json

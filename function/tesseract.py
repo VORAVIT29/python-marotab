@@ -4,7 +4,7 @@ from io import BytesIO
 from PIL import Image
 import easyocr
 import base64
-import cv2
+# import cv2
 import os
 
 
@@ -80,31 +80,12 @@ class tesseract:
         text_list = []
         confidence_percentage_list = 0
         for detection in result:
-            # top_left = tuple(detection[0][0])
-            # bottom_right = tuple(detection[0][2])
             text = detection[1]
             text_list.append(text)
             score = detection[2]
             confidence_percentage_list = round(score * 100, 1)
-            # img = cv2.rectangle(img, top_left, bottom_right, (0, 255, 0), 3)
-            # img = cv2.putText(img, text, (20, spacer), font,
-            #                   0.5, (255, 45, 0), 2, cv2.LINE_AA)
-            # spacer += 15
 
         # remove image
         os.remove("image_process.png")
 
         return set_result(STATUS_SUCCESS, {'texts': ''.join(text_list), 'confidences': confidence_percentage_list})
-
-    # def set_result(self, status='', result=None):
-    #     self.result['status'] = status
-    #     self.result['result'] = result
-    #     print(self.result)
-
-    # plt.imshow(img)
-    # plt.show()
-
-    # plt.imshow(imgOrg)
-    # plt.show()
-
-    # text_list
