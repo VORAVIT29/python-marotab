@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from function import connectSQL, tesseract as tr
+from function import connectSQL
 
 app = Flask(__name__)
 CORS(app)
@@ -18,11 +18,11 @@ sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
 @app.route('/')
 def main():
     return '<center>' \
-           '<h1>Welcome To Python Server V.1.2</h1>' \
+           '<h1>Welcome To Python Server</h1>' \
            '<h2>Python Version (3.9)</h2>' \
            '<h3>Flask Version (2.2.2)</h3>' \
            f'<p>Status Database: <strong>{sql.result["result"]}</strong></p>' \
-           f'</center>'
+           '</center>'
 
 
 @app.route('/insert-data', methods=['POST'])
@@ -72,7 +72,7 @@ def find_data_byIdNumber(id):
 
 
 @app.route('/find-dataImg-byRoomnumber/<roomNumber>')
-def find_dataImg_byRoomnumber(roomNumber):
+def find_dataImg_by_room_number(roomNumber):
     result = sql.find_dataImg_byRoomnumber(roomNumber)
     return jsonify(result)
 
@@ -104,15 +104,6 @@ def find_by_adminPass():
     dataQuery = sql.findUserPassByAdminPass(admin_pass)
     print(f'findUser byadminpass => {dataQuery}')
     return jsonify(dataQuery)
-
-
-@app.route('/img-to-text', methods=['POST'])
-def img_to_text():
-    data = request.json
-    url_img = data['url_img']
-    ter = tr.tesseract(url_img)
-    result = ter.set_data()
-    return jsonify(result)
 
 
 if __name__ == '__main__':

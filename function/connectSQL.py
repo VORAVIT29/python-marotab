@@ -269,7 +269,7 @@ class SQL:
     def set_result(self, status='', result=None):
         self.result['status'] = status
         self.result['result'] = result
-        # print(self.result)
+        print(self.result)
 
     def data_list_to_json(self, data_lists):
         # Convert List to json
