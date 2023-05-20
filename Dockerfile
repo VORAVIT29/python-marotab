@@ -1,6 +1,6 @@
 # Use the official lightweight Python image.
 # https://hub.docker.com/_/python
-FROM python:3.9-slim
+FROM python:3.9
 
 RUN apt-get update && apt-get install -y curl gnupg2
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
