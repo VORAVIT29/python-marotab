@@ -18,7 +18,7 @@ sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
 @app.route('/')
 def main():
     return '<center>' \
-           '<h1>Welcome To Python Server <small>Edit 25/5/2023</small></h1>' \
+           '<h1>Welcome To Python Server <small>UPDATE 25/5/2023</small></h1>' \
            '<h2>Python Version (3.9)</h2>' \
            '<h3>Flask Version (2.2.2)</h3>' \
            f'<p>Status Database: {sql.connect_database()}</p>' \
