@@ -217,21 +217,27 @@ class SQL:
             # convert String to Json
             json_datas = json.loads(dataTarget)
 
-            Query = f"UPDATE {table_name} " \
-                    f"SET unit_before = {json_datas['unit_before']},unit_used = {json_datas['unit_used']}," \
-                    f"electricity_rate = {json_datas['electricity_rate']}, electricity_bill = {json_datas['electricity_bill']}," \
-                    f"room_rental = {json_datas['room_rental']},Other = {json_datas['Other']},Total = {json_datas['Total']}," \
-                    f"room_number =  '{json_datas['room_number']}',unit_present = {json_datas['unit_present']} " \
-                    f"WHERE id = {json_datas['id']} "
-            self.cursor.execute(Query)
+            if table_name == 'calculate_unit':
+                new_data_update = {row: json_datas[row] for row in json_datas if row != 'id'}
+                room_number = json_datas['room_number']
+                self.session.query(self.calculateUnit).filter_by(room_number=room_number).update(new_data_update)
+                self.session.commit()
+            # Query = f"UPDATE {table_name} " \
+            #         f"SET unit_before = {json_datas['unit_before']},unit_used = {json_datas['unit_used']}," \
+            #         f"electricity_rate = {json_datas['electricity_rate']}, electricity_bill = {json_datas['electricity_bill']}," \
+            #         f"room_rental = {json_datas['room_rental']},Other = {json_datas['Other']},Total = {json_datas['Total']}," \
+            #         f"room_number =  '{json_datas['room_number']}',unit_present = {json_datas['unit_present']} " \
+            #         f"WHERE id = {json_datas['id']} "
+            # self.cursor.execute(Query)
+            #
+            # self.cursor.commit()
+            #
+            # self.cursor.close()
+            #
+            # self.connect.close()
 
-            self.cursor.commit()
-
-            self.cursor.close()
-
-            self.connect.close()
-
-            return set_result(STATUS_SUCCESS, json_datas)
+            self.session.close()
+            return set_result(STATUS_SUCCESS)
         except sqlalchemy.exc.InterfaceError as ex:
             return set_result(STATUS_ERROR, ex)
 
@@ -442,7 +448,6 @@ class SQL:
             # find data call miter by room_number
             data_call_miter = self.session.query(self.calculateUnit).filter_by(room_number=room_number).all()
 
-            self.session.close()
             # Query = f"SELECT * FROM calculate_unit WHERE room_number = '{room_number}' "
             # self.cursor.execute(Query)
             # dataRow = self.cursor.fetchall()
@@ -463,6 +468,13 @@ class SQL:
                 if data_json_call_miter['unit_present'] != data_json_camera['unit_present']:
                     data_json_call_miter['unit_before'] = data_json_call_miter['unit_present']
                     data_json_call_miter['unit_present'] = data_json_camera['unit_present']
+
+                    # update data
+                    data_update = {k: v for k, v in data_json_call_miter.items() if k != 'id'}
+                    self.session.query(self.calculateUnit).filter_by(room_number=room_number).update(
+                        data_update)
+                    self.session.commit()
+                    self.session.close()
 
                 return set_result(STATUS_SUCCESS, data_json_call_miter)
             elif not data_camera:  # camera Empty

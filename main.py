@@ -77,7 +77,7 @@ def find_all(table):
 @app.route('/find-data-tenant-byIdNumber/<table_name>/<id>')
 def find_data_byIdNumber(id, table_name):
     result = sql.find_data_byId(id, table_name)
-    print('find_data_byIdNumber =>', result)
+    # print('find_data_byIdNumber =>', result)
     return jsonify(result)
 
 
