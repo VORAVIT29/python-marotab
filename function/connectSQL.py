@@ -3,7 +3,7 @@ import pyodbc as db
 import hashlib
 import json
 
-from sqlalchemy import insert, Table, Column, Integer, String, MetaData, update, delete, and_, Float
+from sqlalchemy import insert, Table, Column, Integer, String, MetaData, update, delete, and_, Float, desc
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker, declarative_base
 
@@ -18,7 +18,7 @@ def convert_to_json(data_all):
     data_json = []
     if data_all:
         result = [row.__dict__ for row in data_all]
-        data_json = [{key: value for key, value in row.items() if key != '_sa_instance_state'} for row in result][0]
+        data_json = [{key: value for key, value in row.items() if key != '_sa_instance_state'} for row in result]
 
     return data_json
 
@@ -446,7 +446,8 @@ class SQL:
             data_camera = self.session.query(self.cameraCaptureUnit).filter_by(room_number=room_number).all()
 
             # find data call miter by room_number
-            data_call_miter = self.session.query(self.calculateUnit).filter_by(room_number=room_number).all()
+            data_call_miter = self.session.query(self.calculateUnit).filter_by(room_number=room_number).order_by(
+                desc(self.calculateUnit.date_call), desc(self.calculateUnit.id)).all()
 
             # Query = f"SELECT * FROM calculate_unit WHERE room_number = '{room_number}' "
             # self.cursor.execute(Query)
@@ -458,11 +459,11 @@ class SQL:
             # self.connect.cursor()
             #
             if data_camera and data_call_miter:  # not Empty all
-                data_json_camera = convert_to_json(data_camera)
-                # print('data_json_camera :', len(data_json_camera) > 0)
+                data_json_camera = convert_to_json(data_camera)[0]
+                # print('data_json_camera :', data_json_camera['unit_present'])
 
-                data_json_call_miter = convert_to_json(data_call_miter)
-                # print('data_json_call_miter :', len(data_json_call_miter) > 0)
+                data_json_call_miter = convert_to_json(data_call_miter)[0]
+                # print(data_json_call_miter['unit_present'])
 
                 # swap unit_present to unit_before
                 if data_json_call_miter['unit_present'] != data_json_camera['unit_present']:
@@ -477,6 +478,7 @@ class SQL:
                     self.session.close()
 
                 return set_result(STATUS_SUCCESS, data_json_call_miter)
+                # return set_result(STATUS_SUCCESS, '')
             elif not data_camera:  # camera Empty
                 return set_result(STATUS_EMPTY)
             else:
