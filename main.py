@@ -18,10 +18,10 @@ sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
 @app.route('/')
 def main():
     return '<center>' \
-           '<h1>Welcome To Python Server</h1>' \
+           '<h1>Welcome To Python Server <small>Edit 25/5/2023</small></h1>' \
            '<h2>Python Version (3.9)</h2>' \
            '<h3>Flask Version (2.2.2)</h3>' \
-           f'<p>Status Database: <strong>{sql.result["result"]}</strong></p>' \
+           f'<p>Status Database: {sql.connect_database()}</p>' \
            '</center>'
 
 
@@ -31,6 +31,15 @@ def insert_data():
     dataTarget = data['target']
     tableName = data['table']
     result = sql.insert_data(tableName, dataTarget)
+    return jsonify(result)
+
+
+@app.route('/update-data-call', methods=['POST'])
+def update_data_call():
+    data = request.json
+    dataTarget = data['target']
+    tableName = data['table']
+    result = sql.update_call(tableName, dataTarget)
     return jsonify(result)
 
 
@@ -65,9 +74,10 @@ def find_all(table):
     return jsonify(data_all)
 
 
-@app.route('/find-data-tenant-byIdNumber/<id>')
-def find_data_byIdNumber(id):
-    result = sql.find_data_byId(id)
+@app.route('/find-data-tenant-byIdNumber/<table_name>/<id>')
+def find_data_byIdNumber(id, table_name):
+    result = sql.find_data_byId(id, table_name)
+    print('find_data_byIdNumber =>', result)
     return jsonify(result)
 
 
@@ -104,6 +114,13 @@ def find_by_adminPass():
     dataQuery = sql.findUserPassByAdminPass(admin_pass)
     print(f'findUser byadminpass => {dataQuery}')
     return jsonify(dataQuery)
+
+
+@app.route('/find-data-call-miter/<room_number>')
+def find_data_call_miter(room_number):
+    result = sql.find_data_call_miter_byId(room_number)
+    # print('find_data_call_miter =>', result)
+    return jsonify(result)
 
 
 if __name__ == '__main__':

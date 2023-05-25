@@ -9,4 +9,5 @@ def set_result(status='', result=None):
         'status': status,
         'result': result
     }
+    print(result['status'])
     return result

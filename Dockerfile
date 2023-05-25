@@ -7,7 +7,8 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 RUN curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
 RUN apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17
 RUN apt-get install -y unixodbc-dev
-RUN pip install pyodbc
+
+#RUN pip install pyodbc
 
 
 
@@ -28,6 +29,5 @@ RUN pip install gunicorn
 # For environments with multiple CPU cores, increase the number of workers
 # to be equal to the cores available.
 # Timeout is set to 0 to disable the timeouts of the workers to allow Cloud Run to handle instance scaling.
-#CMD /opt/mssql/bin/sqlservr & exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 main:app
 CMD /opt/mssql/bin/sqlservr & exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 main:app
 
