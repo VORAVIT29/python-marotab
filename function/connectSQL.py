@@ -113,7 +113,7 @@ class SQL:
                 # data_json = [
                 #     {key: value for key, value in row.items() if key != '_sa_instance_state'} for row in result
                 # ]
-                data_json = convert_to_json(dataRow)
+                # data_json = convert_to_json(dataRow)[0]
                 # data = data_json[0] if len(data_json) == 1 else data_json
                 return set_result(STATUS_SUCCESS)
             else:
@@ -482,7 +482,7 @@ class SQL:
             elif not data_camera:  # camera Empty
                 return set_result(STATUS_EMPTY)
             else:
-                data_json_camera = convert_to_json(data_camera)
+                data_json_camera = convert_to_json(data_camera)[0]
                 data_json_call = {
                     'unit_present': data_json_camera['unit_present'],
                     'room_number': data_json_camera['room_number'],
