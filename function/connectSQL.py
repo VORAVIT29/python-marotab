@@ -219,8 +219,8 @@ class SQL:
 
             if table_name == 'calculate_unit':
                 new_data_update = {row: json_datas[row] for row in json_datas if row != 'id'}
-                room_number = json_datas['room_number']
-                self.session.query(self.calculateUnit).filter_by(room_number=room_number).update(new_data_update)
+                id_call = json_datas['id']
+                self.session.query(self.calculateUnit).filter_by(id=id_call).update(new_data_update)
                 self.session.commit()
             # Query = f"UPDATE {table_name} " \
             #         f"SET unit_before = {json_datas['unit_before']},unit_used = {json_datas['unit_used']}," \
