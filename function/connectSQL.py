@@ -218,7 +218,9 @@ class SQL:
             json_datas = json.loads(dataTarget)
 
             if table_name == 'calculate_unit':
-                new_data_update = {row: json_datas[row] for row in json_datas if row != 'id'}
+                new_data_update = {
+                    row: json_datas[row] for row in json_datas if row not in ['id', 'date_call', 'time_call']
+                }
                 id_call = json_datas['id']
                 self.session.query(self.calculateUnit).filter_by(id=id_call).update(new_data_update)
                 self.session.commit()
@@ -432,6 +434,7 @@ class SQL:
             # close
             # self.cursor.close()
             # self.connect.close()
+            self.session.close()
 
             return data_json
         except sqlalchemy.exc.InterfaceError as ex:
@@ -469,13 +472,17 @@ class SQL:
                 if data_json_call_miter['unit_present'] != data_json_camera['unit_present']:
                     data_json_call_miter['unit_before'] = data_json_call_miter['unit_present']
                     data_json_call_miter['unit_present'] = data_json_camera['unit_present']
+                    data_json_call_miter['date_call'] = data_json_camera['date_call']
 
                     # update data
                     data_update = {k: v for k, v in data_json_call_miter.items() if k != 'id'}
-                    self.session.query(self.calculateUnit).filter_by(room_number=room_number).update(
-                        data_update)
+                    self.session.query(self.calculateUnit).filter_by(room_number=room_number).update(data_update)
                     self.session.commit()
                     self.session.close()
+
+                # set add Data
+                data_json_call_miter['date_call'] = data_json_camera['date_call']
+                data_json_call_miter['time_call'] = data_json_camera['time_call']
 
                 return set_result(STATUS_SUCCESS, data_json_call_miter)
                 # return set_result(STATUS_SUCCESS, '')
@@ -493,7 +500,32 @@ class SQL:
         except sqlalchemy.exc.InterfaceError as ex:
             return set_result(STATUS_ERROR, f"Error => {ex}")
 
-    # Class Medthod Table
+    def find_callmiter_lists_by_roomnumber(self, room_number):
+        try:
+            self.connect_database()
+            result = self.session.query(self.calculateUnit).filter_by(room_number=room_number).all()
+            result_info = self.session.query(self.tenantRegistration).filter_by(room_number=room_number).all()
+            result_camera = self.session.query(self.cameraCaptureUnit).filter_by(room_number=room_number).all()
+            self.session.close()
+            data_json = []
+            if result:
+                data_json = convert_to_json(result)
+                data_json_info = convert_to_json(result_info)[0]
+                data_json_camear = convert_to_json(result_camera)[0]
+
+                for data in data_json:
+                    data['fullname'] = f'{data_json_info["name"]} {data_json_info["last_name"]}'
+                    data['date_call'] = data_json_camear['date_call']
+                    data['time_call'] = data_json_camear['time_call']
+
+                return set_result(STATUS_SUCCESS, data_json)
+
+            return set_result(STATUS_EMPTY, data_json)
+        except sqlalchemy.exc.InterfaceError as ex:
+            print(ex)
+            return set_result(STATUS_ERROR, ex)
+
+    # -------------------------- Class Method Table ---------------------------
     class Host(Base):
         __tablename__ = 'host'
         id_admin = Column(Integer, primary_key=True)
@@ -531,6 +563,7 @@ class SQL:
         unit_present = Column(Float)
         id_tenant_registration = Column(Integer)
         date_call = Column(String)
+        time_call = Column(String)
 
     class calculateUnit(Base):
         __tablename__ = 'calculate_unit'

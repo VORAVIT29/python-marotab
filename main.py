@@ -123,6 +123,12 @@ def find_data_call_miter(room_number):
     return jsonify(result)
 
 
+@app.route('/find-callmiter-list/<room_number>')
+def find_callmiter_lists(room_number):
+    result = sql.find_callmiter_lists_by_roomnumber(room_number)
+    return jsonify(result)
+
+
 if __name__ == '__main__':
     # app.run(debug=True, host='localhost', port=3000)
     app.run(debug=True)
