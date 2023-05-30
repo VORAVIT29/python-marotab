@@ -93,7 +93,7 @@ def check_login():
     user = data['username']
     password = data['password']
     result = sql.check_login(user, password)
-    print(f'Check Login => {result}')
+    # print(f'Check Login => {result}')
     return jsonify(result)
 
 
@@ -103,7 +103,7 @@ def change_forget_pass():
     id_admin = data['id_admin']
     new_password = data['password']
     result = sql.change_password(new_password, id_admin)
-    print(f'Change Password => {result}')
+    # print(f'Change Password => {result}')
     return jsonify(result)
 
 
@@ -112,7 +112,7 @@ def find_by_adminPass():
     data = request.json
     admin_pass = data['admin_password']
     dataQuery = sql.findUserPassByAdminPass(admin_pass)
-    print(f'findUser byadminpass => {dataQuery}')
+    # print(f'findUser byadminpass => {dataQuery}')
     return jsonify(dataQuery)
 
 
