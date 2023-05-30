@@ -176,27 +176,28 @@ class SQL:
                 result_call = self.session.query(self.calculateUnit).filter_by(room_number=room_number).order_by(
                     desc(self.calculateUnit.id)).all()
 
-                data_json = convert_to_json(result_call)
+                data_json_cal_find_by_room_number = convert_to_json(result_call)
 
-                # check data more 5
-                if len(data_json) > 5:
+                # check data more 4
+                if len(data_json_cal_find_by_room_number) > 4:
                     # get data old
-                    data_old = data_json[-1]
+                    data_old = data_json_cal_find_by_room_number[-1]
                     # after find data delete by id
                     data_delete = self.session.query(self.calculateUnit).filter_by(id=data_old['id']).first()
                     self.session.delete(data_delete)
                     self.session.commit()
 
                     # find data by room number
-                    result_call = self.session.query(self.calculateUnit).filter_by(room_number=room_number).order_by(
-                        desc(self.calculateUnit.id)).all()
-                    json_datas = convert_to_json(result_call)
+                    # result_call = self.session.query(self.calculateUnit).filter_by(room_number=room_number).order_by(
+                    #     desc(self.calculateUnit.id)).all()
+                    # data_json = convert_to_json(result_call)
                     self.session.close()
 
                 # print(json_datas)
                 new_data_insert = {
                     row: json_datas[row] for row in json_datas if row not in ['date_camera', 'time_camera']
                 }
+
                 new_data = self.calculateUnit(**new_data_insert)
                 self.session.add(new_data)
                 self.session.commit()
