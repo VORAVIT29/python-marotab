@@ -115,7 +115,8 @@ class SQL:
                 # ]
                 # data_json = convert_to_json(dataRow)[0]
                 # data = data_json[0] if len(data_json) == 1 else data_json
-                return set_result(STATUS_SUCCESS)
+                result = convert_to_json(dataRow)[0]
+                return set_result(STATUS_SUCCESS, result['id_admin'])
             else:
                 return set_result(STATUS_EMPTY)
         except sqlalchemy.exc.InterfaceError as ex:
@@ -170,8 +171,33 @@ class SQL:
                 self.session.commit()
 
             elif table_name == 'calculate_unit':
+                # find data call by room number
+                room_number = json_datas['room_number']
+                result_call = self.session.query(self.calculateUnit).filter_by(room_number=room_number).order_by(
+                    desc(self.calculateUnit.id)).all()
+
+                data_json = convert_to_json(result_call)
+
+                # check data more 5
+                if len(data_json) > 5:
+                    # get data old
+                    data_old = data_json[-1]
+                    # after find data delete by id
+                    data_delete = self.session.query(self.calculateUnit).filter_by(id=data_old['id']).first()
+                    self.session.delete(data_delete)
+                    self.session.commit()
+
+                    # find data by room number
+                    result_call = self.session.query(self.calculateUnit).filter_by(room_number=room_number).order_by(
+                        desc(self.calculateUnit.id)).all()
+                    json_datas = convert_to_json(result_call)
+                    self.session.close()
+
                 # print(json_datas)
-                new_data = self.calculateUnit(**json_datas)
+                new_data_insert = {
+                    row: json_datas[row] for row in json_datas if row not in ['date_camera', 'time_camera']
+                }
+                new_data = self.calculateUnit(**new_data_insert)
                 self.session.add(new_data)
                 self.session.commit()
 
@@ -219,7 +245,7 @@ class SQL:
 
             if table_name == 'calculate_unit':
                 new_data_update = {
-                    row: json_datas[row] for row in json_datas if row not in ['id', 'date_call', 'time_call']
+                    row: json_datas[row] for row in json_datas if row not in ['id', 'date_camera', 'time_camera']
                 }
                 id_call = json_datas['id']
                 self.session.query(self.calculateUnit).filter_by(id=id_call).update(new_data_update)
@@ -452,6 +478,8 @@ class SQL:
             data_call_miter = self.session.query(self.calculateUnit).filter_by(room_number=room_number).order_by(
                 desc(self.calculateUnit.date_call), desc(self.calculateUnit.id)).all()
 
+            self.session.close()
+
             # Query = f"SELECT * FROM calculate_unit WHERE room_number = '{room_number}' "
             # self.cursor.execute(Query)
             # dataRow = self.cursor.fetchall()
@@ -472,20 +500,18 @@ class SQL:
                 if data_json_call_miter['unit_present'] != data_json_camera['unit_present']:
                     data_json_call_miter['unit_before'] = data_json_call_miter['unit_present']
                     data_json_call_miter['unit_present'] = data_json_camera['unit_present']
-                    data_json_call_miter['date_call'] = data_json_camera['date_call']
+                    # data_json_call_miter['date_call'] = data_json_camera['date_call']
 
                     # update data
-                    data_update = {k: v for k, v in data_json_call_miter.items() if k != 'id'}
-                    self.session.query(self.calculateUnit).filter_by(room_number=room_number).update(data_update)
-                    self.session.commit()
-                    self.session.close()
+                    # data_update = {k: v for k, v in data_json_call_miter.items() if k != 'id'}
+                    # self.session.query(self.calculateUnit).filter_by(id=data_json_call_miter['id']).update(data_update)
+                    # self.session.commit()
 
                 # set add Data
-                data_json_call_miter['date_call'] = data_json_camera['date_call']
-                data_json_call_miter['time_call'] = data_json_camera['time_call']
+                data_json_call_miter['date_camera'] = data_json_camera['date_call']
+                data_json_call_miter['time_camera'] = data_json_camera['time_call']
 
                 return set_result(STATUS_SUCCESS, data_json_call_miter)
-                # return set_result(STATUS_SUCCESS, '')
             elif not data_camera:  # camera Empty
                 return set_result(STATUS_EMPTY)
             else:
@@ -493,6 +519,7 @@ class SQL:
                 data_json_call = {
                     'unit_present': data_json_camera['unit_present'],
                     'room_number': data_json_camera['room_number'],
+                    'date_call': data_json_camera['date_call'],
                     'id': None
                 }
                 return set_result(STATUS_SUCCESS, data_json_call)
@@ -503,23 +530,30 @@ class SQL:
     def find_callmiter_lists_by_roomnumber(self, room_number):
         try:
             self.connect_database()
-            result = self.session.query(self.calculateUnit).filter_by(room_number=room_number).all()
+
+            result_call = self.session.query(self.calculateUnit).filter_by(room_number=room_number).order_by(
+                desc(self.calculateUnit.id)
+            ).all()
+
             result_info = self.session.query(self.tenantRegistration).filter_by(room_number=room_number).all()
+
             result_camera = self.session.query(self.cameraCaptureUnit).filter_by(room_number=room_number).all()
-            self.session.close()
+
             data_json = []
-            if result:
-                data_json = convert_to_json(result)
+            if result_call:
+                data_json = convert_to_json(result_call)
+                print(data_json[-1])
                 data_json_info = convert_to_json(result_info)[0]
-                data_json_camear = convert_to_json(result_camera)[0]
+                data_json_camera = convert_to_json(result_camera)[0]
 
                 for data in data_json:
                     data['fullname'] = f'{data_json_info["name"]} {data_json_info["last_name"]}'
-                    data['date_call'] = data_json_camear['date_call']
-                    data['time_call'] = data_json_camear['time_call']
+                    data['date_camera'] = data_json_camera['date_call']
+                    data['time_camera'] = data_json_camera['time_call']
 
                 return set_result(STATUS_SUCCESS, data_json)
 
+            self.session.close()
             return set_result(STATUS_EMPTY, data_json)
         except sqlalchemy.exc.InterfaceError as ex:
             print(ex)
