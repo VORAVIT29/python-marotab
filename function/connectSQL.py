@@ -40,10 +40,8 @@ class SQL:
 
     def connect_database(self):
         try:
-            # self.connect = db.connect(
-            #     "Driver={ODBC Driver 17 for SQL Server};"
-            #     f"Server={self.serverName};Database={self.databaseName};Trusted_Connection=yes;"
-            # )
+            # connect = "Driver={ODBC Driver 17 for SQL Server};" \
+            #           f"Server={self.serverName};Database={self.databaseName};Trusted_Connection=yes;"
 
             # self.connect = db.connect(
             #     'Driver={ODBC Driver 17 for SQL Server};'
@@ -489,7 +487,7 @@ class SQL:
             # # close
             # self.cursor.close()
             # self.connect.cursor()
-            #
+
             if data_camera and data_call_miter:  # not Empty all
                 data_json_camera = convert_to_json(data_camera)[0]
                 # print('data_json_camera :', data_json_camera['unit_present'])
@@ -515,12 +513,12 @@ class SQL:
                 return set_result(STATUS_SUCCESS, data_json_call_miter)
             elif not data_camera:  # camera Empty
                 return set_result(STATUS_EMPTY)
-            else:
+            else:  # New Data
                 data_json_camera = convert_to_json(data_camera)[0]
                 data_json_call = {
                     'unit_present': data_json_camera['unit_present'],
                     'room_number': data_json_camera['room_number'],
-                    'date_call': data_json_camera['date_call'],
+                    'date_camera': data_json_camera['date_call'],
                     'id': None
                 }
                 return set_result(STATUS_SUCCESS, data_json_call)
