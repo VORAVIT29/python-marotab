@@ -7,9 +7,9 @@ CORS(app)
 
 # Connect Sql
 # Local Server
-# sql = connectSQL.SQL('DESKTOP-R4AEEG6\SQLEXPRESS', 'marotabBeta')
+sql = connectSQL.SQL('DESKTOP-R4AEEG6\SQLEXPRESS', 'marotab')
 # Server Cloud
-sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
+# sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
 
 
 # data = request.get_json()
@@ -17,12 +17,16 @@ sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
 
 @app.route('/')
 def main():
-    return '<center>' \
+    return '<body style="background:black;color:white">' \
+           '<center>' \
+           '<br/>' \
            '<h1>Welcome To Python Server <small>UPDATE 25/5/2023</small></h1>' \
            '<h2>Python Version (3.9)</h2>' \
            '<h3>Flask Version (2.2.2)</h3>' \
            f'<p>Status Database: {sql.connect_database()}</p>' \
-           '</center>'
+           '<img src="/static/python.png" width="300" style="padding:5rem;"/>' \
+           '</center>' \
+           '</body>'
 
 
 @app.route('/insert-data', methods=['POST'])

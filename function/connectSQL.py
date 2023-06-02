@@ -40,15 +40,15 @@ class SQL:
 
     def connect_database(self):
         try:
-            # connect = "Driver={ODBC Driver 17 for SQL Server};" \
-            #           f"Server={self.serverName};Database={self.databaseName};Trusted_Connection=yes;"
+            connect = "Driver={ODBC Driver 17 for SQL Server};" \
+                      f"Server={self.serverName};Database={self.databaseName};Trusted_Connection=yes;"
 
             # self.connect = db.connect(
             #     'Driver={ODBC Driver 17 for SQL Server};'
             #     f'Server={self.serverName};Database={self.databaseName};UID=sqlserver;PWD=~|YQ4p->-vv*dk\P'
             # )
-            connect = 'Driver={ODBC Driver 17 for SQL Server};' \
-                      f'Server={self.serverName};Database={self.databaseName};UID=sqlserver;PWD=~|YQ4p->-vv*dk\P'
+            # connect = 'Driver={ODBC Driver 17 for SQL Server};' \
+            #           f'Server={self.serverName};Database={self.databaseName};UID=sqlserver;PWD=~|YQ4p->-vv*dk\P'
 
             # สร้าง SQLAlchemy engine
             engine = sqlalchemy.create_engine('mssql+pyodbc:///?odbc_connect=' + connect)
@@ -60,7 +60,7 @@ class SQL:
             # connect to cuesor
             # self.cursor = self.connect.cursor()
 
-            return set_result(STATUS_SUCCESS, 'Connect Suscess')
+            return set_result(STATUS_SUCCESS, 'Connect Suscess')['status']
 
         except sqlalchemy.exc.InterfaceError as ex:
             print('Error connecting to : ', ex)
