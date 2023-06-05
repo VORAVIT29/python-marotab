@@ -7,9 +7,9 @@ CORS(app)
 
 # Connect Sql
 # Local Server
-sql = connectSQL.SQL('DESKTOP-R4AEEG6\SQLEXPRESS', 'marotab')
+# sql = connectSQL.SQL('DESKTOP-R4AEEG6\SQLEXPRESS', 'marotab')
 # Server Cloud
-# sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
+sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
 
 
 # data = request.get_json()
@@ -20,7 +20,7 @@ def main():
     return '<body style="background:black;color:white">' \
            '<center>' \
            '<br/>' \
-           '<h1>Welcome To Python Server <small>UPDATE 25/5/2023</small></h1>' \
+           '<h1>Welcome To Python Server <small>UPDATE 5/6/2023</small></h1>' \
            '<h2>Python Version (3.9)</h2>' \
            '<h3>Flask Version (2.2.2)</h3>' \
            f'<p>Status Database: {sql.connect_database()}</p>' \
