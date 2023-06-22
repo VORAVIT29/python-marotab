@@ -7,9 +7,9 @@ CORS(app)
 
 # Connect Sql
 # Local Server
-# sql = connectSQL.SQL('DESKTOP-R4AEEG6\SQLEXPRESS', 'marotab')
+sql = connectSQL.SQL('DESKTOP-R4AEEG6\SQLEXPRESS', 'marotab')
 # Server Cloud
-sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
+# sql = connectSQL.SQL('35.240.177.233', 'marotabBeta')
 
 
 # data = request.get_json()

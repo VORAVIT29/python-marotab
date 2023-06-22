@@ -1,0 +1,19 @@
+{
+  "data": [
+    {
+      "unit_before": "2900.0",
+      "electricity_rate": "1.0",
+      "room_rental": "45.0",
+      "Total": "145.0",
+      "date_call": "2023-05-31",
+      "date_camera": "2023-03-01",
+      "id": 69,
+      "unit_present": "3000.0",
+      "unit_used": "100.0",
+      "electricity_bill": "100.0",
+      "Other": "50.0",
+      "room_number": "1",
+      "time_camera": "13:43"
+    }
+  ]
+}
